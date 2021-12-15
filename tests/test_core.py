@@ -3,10 +3,10 @@ import numpy as np
 
 
 def test_rbf_dot():
-    X1 = np.loadtxt(r"..\testdata\X1.txt", skiprows=5)
-    Y1 = np.loadtxt(r"..\testdata\Y1.txt", skiprows=5)
-    Hxy = np.loadtxt(r"..\testdata\rbf_X1_Y1.txt", skiprows=5)
-    Hxx = np.loadtxt(r"..\testdata\rbf_X1_X1.txt", skiprows=5)
+    X1 = np.loadtxt(r"../testdata/X1.txt", skiprows=5)
+    Y1 = np.loadtxt(r"../testdata/Y1.txt", skiprows=5)
+    Hxy = np.loadtxt(r"../testdata/rbf_X1_Y1.txt", skiprows=5)
+    Hxx = np.loadtxt(r"../testdata/rbf_X1_X1.txt", skiprows=5)
 
     assert len(X1) == 100 and len(Y1) == 100
 
@@ -15,16 +15,16 @@ def test_rbf_dot():
 
 
 def test_compute_kernel_size():
-    X1 = np.loadtxt(r"..\testdata\X1.txt", skiprows=5)
-    Y1 = np.loadtxt(r"..\testdata\Y1.txt", skiprows=5)
+    X1 = np.loadtxt(r"../testdata/X1.txt", skiprows=5)
+    Y1 = np.loadtxt(r"../testdata/Y1.txt", skiprows=5)
 
     my_sig = _compute_kernel_size(X1, Y1, max_samples=100)
     assert abs(my_sig - 1.5353) < 1e-3
 
 
 def test_mmdTestBoot():
-    X1 = np.loadtxt(r"..\testdata\X1.txt", skiprows=5)
-    Y1 = np.loadtxt(r"..\testdata\Y1.txt", skiprows=5)
+    X1 = np.loadtxt(r"../testdata/X1.txt", skiprows=5)
+    Y1 = np.loadtxt(r"../testdata/Y1.txt", skiprows=5)
 
     testStat, thresh = mmdTestBoot(X1, Y1, alpha= 0.05, params={'shuff': 1000, 'bootForce': True})
 
