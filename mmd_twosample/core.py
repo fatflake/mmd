@@ -2,6 +2,7 @@ import numpy as np
 import math
 from typing import Tuple, Dict
 import os
+import scipy.stats
 
 
 def _calculate_dists(X1: np.ndarray, X2: np.ndarray) -> np.ndarray:
@@ -71,3 +72,32 @@ def mmdTestBoot(X: np.ndarray, Y: np.ndarray, alpha: float, params: Dict) -> Tup
 
     return testStat, thresh
 
+
+def mmdTestGamma(X: np.ndarray, Y: np.ndarray, alpha: float, params: Dict) -> Tuple[float, float]:
+    m = X.shape[0]
+
+    sig = _compute_kernel_size(X, Y) if 'sig' not in params or params['sig'] <= 0 else params['sig']
+
+    K = _rbf_dot(X, X, sig)
+    L = _rbf_dot(Y, Y, sig)
+    KL = _rbf_dot(X, Y, sig)
+
+    testStat = 1 / m * np.sum(K + L - KL - np.transpose(KL))
+
+    #mean under H0 of MMD
+    meanMMD = 2 / m * (1 - 1 / m * np.sum(np.diag(KL)))
+
+    K = K - np.diag(np.diag(K))
+    L = L - np.diag(np.diag(L))
+    KL = KL - np.diag(np.diag(KL))
+
+    # Variance under H0 of MMD
+    varMMD = 2 / m / (m - 1) * 1 / m / (m - 1) * np.sum(np.power(K + L - KL - np.transpose(KL), 2.0))
+
+
+    al = meanMMD * meanMMD / varMMD
+    bet = varMMD * m / meanMMD
+
+    thresh = scipy.stats.gamma.ppf(1 - alpha, al, scale=bet)
+
+    return testStat, thresh
