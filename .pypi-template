@@ -1,0 +1,22 @@
+a_description_for_the_package: Various kernel-based statistical hypothesis tests for
+  the two-sample problem
+classifiers:
+- python3
+- developmenstatus3
+console_scripts: []
+first_year_of_publication: '2021'
+github_account: fatflake
+github_repo_name: mmd-twosample
+keywords_describing_the_package: statistical test
+license: GPL
+package_module_name: mmd_twosample
+package_name: mmd_twosample
+package_tagline: two-sample mmd test
+package_title: two-sample mmd test
+requires:
+- numpy
+scripts: []
+your_author_name: Jacquelyn Shelton
+your_email_address: jacquelyn.ann.shelton@gmail.com
+your_full_name: Jacquelyn Shelton
+your_name: ''
