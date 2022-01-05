@@ -3,6 +3,7 @@ import math
 from typing import Tuple, Dict
 import os
 import scipy.stats
+from scipy.linalg import eigh as largest_eigh
 
 
 def _calculate_dists(X1: np.ndarray, X2: np.ndarray) -> np.ndarray:
@@ -99,5 +100,36 @@ def mmdTestGamma(X: np.ndarray, Y: np.ndarray, alpha: float, params: Dict) -> Tu
     bet = varMMD * m / meanMMD
 
     thresh = scipy.stats.gamma.ppf(1 - alpha, al, scale=bet)
+
+    return testStat, thresh
+
+
+def mmdTestSpec(X: np.ndarray, Y: np.ndarray, alpha: float, params: Dict) -> Tuple[float, float]:
+    m = X.shape[0]
+
+    sig = _compute_kernel_size(X, Y) if 'sig' not in params or params['sig'] <= 0 else params['sig']
+    numEigs = 2 * m - 2 if 'numEigs' not in params or params['numEigs'] <= 0 else params['numEigs']
+
+    K = _rbf_dot(X, X, sig)
+    L = _rbf_dot(Y, Y, sig)
+    KL = _rbf_dot(X, Y, sig)
+
+    testStat = 1 / m * np.sum(K + L - KL - np.transpose(KL))
+
+    Kz = np.concatenate((np.concatenate((K, KL), axis=1), np.concatenate((np.transpose(KL), L), axis=1)), axis=0)
+    H = np.identity(2 * m) - 1 / (2 * m) * np.ones((2 * m, 2 * m))
+    Kz = np.matmul(np.matmul(H, Kz), H)
+
+    kEigs, _ = largest_eigh(Kz, eigvals=(Kz.shape[0] - numEigs, Kz.shape[0] - 1))
+    kEigs = 1 / 2 / m * np.abs(kEigs)
+    numEigs = len(kEigs)
+
+    num_null_samp = params['numNullSamp']
+    nullSampMMD = np.zeros(num_null_samp)
+
+    for whichSamp in range(num_null_samp):
+        nullSampMMD[whichSamp] = 2 * np.sum(kEigs * np.power(np.random.randn(numEigs), 2))
+
+    thresh = np.quantile(nullSampMMD, 1 - alpha)
 
     return testStat, thresh

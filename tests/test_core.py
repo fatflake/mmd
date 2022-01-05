@@ -1,4 +1,4 @@
-from mmd_twosample.core import _rbf_dot, _compute_kernel_size, mmdTestBoot, mmdTestGamma
+from mmd_twosample.core import _rbf_dot, _compute_kernel_size, mmdTestBoot, mmdTestGamma, mmdTestSpec
 import numpy as np
 
 
@@ -41,4 +41,15 @@ def test_mmdTestGamma():
 
     assert abs(testStat - 45.387) < 1e-3
     assert abs(thresh - 3.3464) < 1e-3
+    print(thresh)
+
+
+def test_mmdTestSpec():
+    X1 = np.loadtxt(r"../testdata/X1.txt", skiprows=5)
+    Y1 = np.loadtxt(r"../testdata/Y1.txt", skiprows=5)
+
+    testStat, thresh = mmdTestSpec(X1, Y1, alpha= 0.05, params={'numNullSamp': 1000})
+
+    #assert abs(testStat - 45.387) < 1e-3
+    #assert abs(thresh - 3.3464) < 1e-3
     print(thresh)
